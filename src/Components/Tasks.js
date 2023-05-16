@@ -27,7 +27,7 @@ export default function Tasks() {
   };
 
   return (
-    <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper', margin:10, ml:35  }}> <Home />
+    <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper', margin:10, ml:35  }}> 
       {[0, 1, 2, 3, ].map((value) => {
         const labelId = `checkbox-list-label-${value}`;
         return (

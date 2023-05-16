@@ -3,9 +3,12 @@ import Button from '@mui/material/Button';
 import { AppBar, Container, Toolbar, IconButton, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import MenuIcon from '@mui/icons-material/Menu';
+import {Link, Outlet} from 'react-router-dom'
 
-const Home = () => {
+const Layout = () => {
     return ( 
+        <>
+        <Outlet/>
         <AppBar>
         <Container fixed>
           <Toolbar>
@@ -24,6 +27,8 @@ const Home = () => {
           </Toolbar>
         </Container>
       </AppBar>
+      
+      </>
     );
 };
-export default Home;
+export {Layout};

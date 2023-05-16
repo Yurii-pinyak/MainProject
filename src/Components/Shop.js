@@ -28,7 +28,6 @@ const theme = createTheme();
 export default function Shop() {
   return (
     <ThemeProvider theme={theme}>
-    <Home />
       <main>
         <Box
           sx={{
