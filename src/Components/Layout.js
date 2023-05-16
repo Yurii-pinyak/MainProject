@@ -2,7 +2,6 @@ import React from "react";
 import Button from '@mui/material/Button';
 import { AppBar, Container, Toolbar, IconButton, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import MenuIcon from '@mui/icons-material/Menu';
 import {Link, Outlet} from 'react-router-dom'
 
 const Layout = () => {
@@ -13,9 +12,8 @@ const Layout = () => {
         <Container fixed>
           <Toolbar>
             <IconButton edge="start" color="inherit" aria-laabel="menu">
-            <MenuIcon />
             </IconButton>
-            <Typography variant="h4" mr={3}>Logo |</Typography>
+            <Typography variant="h4" mr={3}>FammiHelp |</Typography>
             <Button color='inherit' variant='primary' href="Tasks">Tasks</Button>
             <Box mr={40}>
             <Button color='inherit' variant='primary' href="Shop">Shop</Button>

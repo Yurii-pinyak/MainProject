@@ -1,4 +1,3 @@
-import * as React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -7,32 +6,43 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ModeIcon from '@mui/icons-material/Mode';
-import Home from './Home';
+import React, { useEffect, useState } from 'react';
 
 export default function Tasks() {
-  
-  const [checked, setChecked] = React.useState([0]);
+  const [tasks, setTasks] = useState([]);
 
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
+  const fetchData = () => {
+    fetch('https://646393da043c103502a69402.mockapi.io/Tasks/')
+      .then(response => response.json())
+      .then(data => setTasks(data))
+      .catch(error => console.error('Помилка при отриманні даних:', error));
+  };
 
-    setChecked(newChecked);
+  const handleToggle = (taskId) => () => {
+    const updatedTasks = tasks.map((task) => {
+      if (task.id === taskId) {
+        return {
+          ...task,
+          checked: !task.checked, // Інвертуємо значення "checked"
+        };
+      }
+      return task;
+    });
+
+    setTasks(updatedTasks);
   };
 
   return (
     <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper', margin:10, ml:35  }}> 
-      {[0, 1, 2, 3, ].map((value) => {
-        const labelId = `checkbox-list-label-${value}`;
+      {tasks.map((task) => {
+        const labelId = `checkbox-list-label-${task.id}`;
         return (
           <ListItem
-            key={value}
+            key={task.id}
             secondaryAction={
               <IconButton edge="end" aria-label="comments">
                 <ModeIcon />
@@ -40,17 +50,17 @@ export default function Tasks() {
             }
             disablePadding
           > 
-            <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+            <ListItemButton role={undefined} onClick={handleToggle(task.id)} dense>
               <ListItemIcon>
                 <Checkbox
                   edge="start"
-                  checked={checked.indexOf(value) !== -1}
+                  checked={Boolean(task.checked)}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ 'aria-labelledby': labelId }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
+              <ListItemText id={labelId} primary={task.description} secondary={`Нагорода: ${task.reward}`} />
             </ListItemButton>
           </ListItem>
         );
