@@ -12,6 +12,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { AuthContext, AuthProvider } from './AuthContext';
+import { useState, useContext } from 'react';
 
 function Copyright(props) {
   return (
@@ -26,6 +28,24 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function Login() {
+  const { login } = useContext(AuthContext);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    fetch('https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users')
+      .then((response) => response.json())
+      .then((data) => {
+        const userExists = data.some((user) => user.username === username && user.password === password);
+        if (userExists) {
+        login(userExists);
+      } else {
+        console.log('Неправильні облікові дані');
+      }
+    })
+      .catch((error) => console.error('Помилка при отриманні даних:', error));
+  };
   
   return (
     <ThemeProvider theme={theme}>
@@ -50,11 +70,13 @@ export default function Login() {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="Username"
+              label="Username"
+              name="Username"
+              autoComplete="Username"
               autoFocus
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
             />
             <TextField
               margin="normal"
@@ -65,6 +87,8 @@ export default function Login() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -75,6 +99,7 @@ export default function Login() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={handleSubmit}
             >
               Sign In
             </Button>
