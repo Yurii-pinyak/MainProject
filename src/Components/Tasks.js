@@ -6,10 +6,12 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ModeIcon from '@mui/icons-material/Mode';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { AuthContext } from './AuthContext';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
+  const { isAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
     fetchData();

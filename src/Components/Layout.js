@@ -16,9 +16,12 @@ import {
 } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Outlet, useLocation } from 'react-router-dom';
+import { AuthContext, AuthProvider } from './AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Layout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTaskCreated, setIsTaskCreated] = useState(false);
   const [isFieldsEmpty, setIsFieldsEmpty] = useState(false);
@@ -26,6 +29,7 @@ const Layout = () => {
   const [taskDescription, setTaskDescription] = useState('');
   const [taskReward, setTaskReward] = useState('');
   const [taskChecked, setTaskChecked] = useState('');
+
 
   const isTaskPage = location.pathname === '/Tasks';
 
@@ -84,6 +88,13 @@ const Layout = () => {
     fullWidth: true,
   };
 
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
+  const logout = () => {setIsAuthenticated(false);
+    localStorage.setItem('isAuthenticated', JSON.stringify(false));
+    navigate('/Login');
+  };
+
   return (
     <>
       <Outlet />
@@ -104,10 +115,18 @@ const Layout = () => {
                 </Button>
               </Box>
             )}
+            {isAuthenticated ? (
+              <Box mr={5}>
+                <Button color='error' variant='contained' onClick={logout}>Log Out</Button>
+              </Box>
+            ) : (
+            <>
             <Box mr={5}>
               <Button color='success' variant='contained' href="Login">Log In</Button>
             </Box>
             <Button color='error' variant='contained' href="Register">Sign up</Button>
+            </>
+            )}
           </Toolbar>
         </Container>
       </AppBar>

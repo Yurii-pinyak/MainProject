@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AuthContext, AuthProvider } from './AuthContext';
 import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Copyright(props) {
   return (
@@ -25,10 +26,12 @@ function Copyright(props) {
   );
 }
 
+
 const theme = createTheme();
 
 export default function Login() {
   const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -39,7 +42,8 @@ export default function Login() {
       .then((data) => {
         const userExists = data.some((user) => user.username === username && user.password === password);
         if (userExists) {
-        login(userExists);
+        login();
+        navigate('/Tasks');
       } else {
         console.log('Неправильні облікові дані');
       }

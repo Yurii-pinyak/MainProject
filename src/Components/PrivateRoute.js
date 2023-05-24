@@ -3,7 +3,7 @@ import { AuthContext } from "./AuthContext";
 import React, {useContext} from "react";
 
 const PrivateRoute = () => {
-    const { isAuthenticated } = useContext(AuthContext);
+    const  {isAuthenticated}  = useContext(AuthContext);
     return (
         isAuthenticated ? <Outlet /> : <Navigate to="login" /> 
     );
