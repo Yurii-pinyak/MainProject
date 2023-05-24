@@ -17,10 +17,11 @@ export default function App() {
     <div className="App">
       <AuthProvider>
       <Routes>
-        <Route path="/" element={<Layout />}>
+      <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-
-          <Route path="Shop" element={<Shop />} />
+          <Route element={<PrivateRoute />}>
+          <Route path="Shop" element={<Shop /> } />
+        </Route>
           <Route element={<PrivateRoute />}>
           <Route path="Tasks" element={<Tasks /> } />
         </Route>

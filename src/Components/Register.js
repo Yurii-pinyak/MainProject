@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useContext} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,6 +12,9 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext, AuthProvider } from './AuthContext';
+
 
 function Copyright(props) {
   return (
@@ -26,6 +29,47 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function Register() {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [userType, setUserType] = useState('');
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { login } = useContext(AuthContext);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+  
+    const userData = {
+      username: username,
+      email: email,
+      password: password,
+      userType: userType
+    };
+
+    saveUserData(userData);
+    login();
+    navigate('/Shop');
+  };
+
+  const saveUserData = (userData) => {
+
+    fetch('https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Дані успішно збережені:', data);
+      })
+      .catch((error) => {
+        console.error('Помилка при збереженні даних:', error);
+      });
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -46,25 +90,17 @@ export default function Register() {
           </Typography>
           <Box component="form" noValidate  sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} >
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="username"
                   required
                   fullWidth
-                  id="firstName"
-                  label="First Name"
+                  id="username"
+                  label="Username"
                   autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -75,6 +111,8 @@ export default function Register() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -86,12 +124,36 @@ export default function Register() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} container justifyContent="space-between">
                 <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
+                  control={
+                    <Checkbox
+                      checked={userType === 'parent'}
+                      onChange={(event) =>
+                        setUserType(event.target.checked ? 'parent' : '')
+                      }
+                      color="primary"
+                      value="parent"
+                    />
+                  }
+                  label="Parent"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={userType === 'child'}
+                      onChange={(event) =>
+                        setUserType(event.target.checked ? 'child' : '')
+                      }
+                      color="primary"
+                      value="child"
+                    />
+                  }
+                  label="Child"
                 />
               </Grid>
             </Grid>
@@ -100,6 +162,7 @@ export default function Register() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={handleSubmit}
             >
               Sign Up
             </Button>

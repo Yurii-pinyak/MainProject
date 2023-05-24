@@ -13,7 +13,8 @@ const AuthProvider = ({ children }) => {
         localStorage.setItem('isAuthenticated', JSON.stringify(isAuthenticated));
       }, [isAuthenticated]);
 
-    const login = () => { setIsAuthenticated(true); };
+    const login = () => { setIsAuthenticated(true);
+        localStorage.setItem('isAuthenticated', JSON.stringify(true)); };
 
     const logout = () => {setIsAuthenticated(false);
         localStorage.setItem('isAuthenticated', JSON.stringify(false)); };
