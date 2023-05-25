@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   AppBar,
   Box,
@@ -18,10 +18,13 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AuthContext, AuthProvider } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const storedIsAdmin = JSON.parse(localStorage.getItem('isAdmin'));
+  const [balance, setBalance] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTaskCreated, setIsTaskCreated] = useState(false);
   const [isFieldsEmpty, setIsFieldsEmpty] = useState(false);
@@ -29,7 +32,7 @@ const Layout = () => {
   const [taskDescription, setTaskDescription] = useState('');
   const [taskReward, setTaskReward] = useState('');
   const [taskChecked, setTaskChecked] = useState('');
-
+  
 
   const isTaskPage = location.pathname === '/Tasks';
 
@@ -89,10 +92,30 @@ const Layout = () => {
   };
 
   const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(JSON.parse(localStorage.getItem('isAdmin')) || false);
 
-  const logout = () => {setIsAuthenticated(false);
+  useEffect(() => {
+    setIsAdmin(storedIsAdmin);
+    axios
+    .get('https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users')
+    .then(response => {
+      const userData = response.data;
+      const user = userData.find(user => user.balance !== undefined);
+      if (user) {
+        setBalance(user.balance);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching balance:', error);
+    });
+  }, []);
+
+  const logout = () => {
+    setIsAuthenticated(false);
     localStorage.setItem('isAuthenticated', JSON.stringify(false));
-    navigate('/Login');
+    setIsAdmin(false);
+    localStorage.setItem('isAdmin', JSON.stringify(false));
+    navigate('/login');
   };
 
   return (
@@ -103,12 +126,12 @@ const Layout = () => {
           <Toolbar>
             <IconButton edge="start" color="inherit" aria-laabel="menu">
             </IconButton>
-            <Typography variant="h4" mr={3}>FammiHelp |</Typography>
+            <Typography variant="h4" mr={3}>FamiHelp |</Typography>
             <Button color='inherit' variant='primary' href="Tasks">Tasks</Button>
             <Box mr={40}>
               <Button color='inherit' variant='primary' href="Shop">Shop</Button>
             </Box>
-            {isTaskPage && (
+            {isTaskPage && storedIsAdmin && (
               <Box mr={5}>
                 <Button color='secondary' variant='contained' onClick={handleModalOpen}>
                   <AddCircleIcon /> Task Button
@@ -116,7 +139,8 @@ const Layout = () => {
               </Box>
             )}
             {isAuthenticated ? (
-              <Box mr={5}>
+              <Box display="flex" alignItems="center" justifyContent="flex-end" ml={2}>
+                {isAdmin ? null : <Typography variant="subtitle1" mr={10}>Your Balance: {balance}</Typography>}
                 <Button color='error' variant='contained' onClick={logout}>Log Out</Button>
               </Box>
             ) : (

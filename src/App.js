@@ -17,8 +17,8 @@ export default function App() {
     <div className="App">
       <AuthProvider>
       <Routes>
-      <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
+      <Route path="/" element={<Navigate to="/Home" />} />
+      <Route element={<Layout />}>
           <Route element={<PrivateRoute />}>
           <Route path="Shop" element={<Shop /> } />
         </Route>
@@ -26,8 +26,9 @@ export default function App() {
           <Route path="Tasks" element={<Tasks /> } />
         </Route>
         </Route>
+        <Route path="/Home" element={<Home />} />
         <Route path="Login" element={<Login />} />
-          <Route path="Register" element={<Register />} />
+        <Route path="Register" element={<Register />} />
       </Routes>
       </AuthProvider>
     </div>

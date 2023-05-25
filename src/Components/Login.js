@@ -40,9 +40,9 @@ export default function Login() {
     fetch('https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users')
       .then((response) => response.json())
       .then((data) => {
-        const userExists = data.some((user) => user.username === username && user.password === password);
-        if (userExists) {
-        login();
+        const user = data.find((user) => user.username === username && user.password === password);
+        if (user) {
+        login(user.type === "parent");
         navigate('/Tasks');
       } else {
         console.log('Неправильні облікові дані');
