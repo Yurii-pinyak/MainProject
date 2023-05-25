@@ -4,7 +4,7 @@ const AuthContext = createContext();
  
 
 const AuthProvider = ({ children }) => {
-
+   
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
         return JSON.parse(localStorage.getItem('isAuthenticated')) || false;
       });
@@ -12,6 +12,8 @@ const AuthProvider = ({ children }) => {
     const [isAdmin, setIsAdmin] = useState(() => {
         return JSON.parse(localStorage.getItem('isAdmin')) || false;
       });  
+
+    const [authenticatedUser, setAuthenticatedUser] = useState(null);
 
       useEffect(() => {
         localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
@@ -36,7 +38,7 @@ const AuthProvider = ({ children }) => {
      };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isAdmin, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, isAdmin, login, logout, authenticatedUser, setAuthenticatedUser }}>
              {children}
         </AuthContext.Provider> );
 };

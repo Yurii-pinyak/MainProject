@@ -30,7 +30,7 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, authenticatedUser, setAuthenticatedUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -43,6 +43,8 @@ export default function Login() {
         const user = data.find((user) => user.username === username && user.password === password);
         if (user) {
         login(user.type === "parent");
+        setAuthenticatedUser(user);
+        localStorage.setItem('authenticatedUser', JSON.stringify(user));
         navigate('/Tasks');
       } else {
         console.log('Неправильні облікові дані');

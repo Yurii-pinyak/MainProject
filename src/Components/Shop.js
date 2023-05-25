@@ -10,11 +10,17 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+
 function Shop() {
   const [data, setData] = useState([]);
+  const [authenticatedUser, setAuthenticatedUser] = useState(null);
 
   useEffect(() => {
     fetchData();
+    const storedUser = localStorage.getItem('authenticatedUser');
+    if (storedUser) {
+      setAuthenticatedUser(JSON.parse(storedUser));
+    }
   }, []);
 
   const fetchData = async () => {
@@ -28,6 +34,33 @@ function Shop() {
   };
 
   const renderCards = () => {
+    const handleBuyNow = async (item) => {
+      try {
+        const response = await fetch(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users/${authenticatedUser.id}`);
+        const userData = await response.json();
+  
+        const userBalance = userData.balance;
+        const itemPrice = item.price;
+  
+        if (userBalance >= itemPrice) {
+          const updatedBalance = userBalance - itemPrice;
+  
+          await fetch(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users/${authenticatedUser.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ balance: updatedBalance }),
+          });
+  
+          console.log('Purchase successful');
+        } else {
+          console.log('Insufficient balance');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
     return data.map((item) => (
       <Grid item key={item.id} xs={12} sm={6} md={4}>
         <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -44,7 +77,7 @@ function Shop() {
             </Typography>
           </CardContent>
           <CardActions sx={{ mt: 'auto' }}>
-            <Button size="small">Buy Now</Button>
+            <Button size="small" onClick={() => handleBuyNow(item)}>Buy Now</Button>
           </CardActions>
         </Card>
       </Grid>

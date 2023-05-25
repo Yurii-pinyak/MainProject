@@ -23,6 +23,7 @@ import axios from 'axios';
 const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { authenticatedUser, setAuthenticatedUser } = useContext(AuthContext);
   const storedIsAdmin = JSON.parse(localStorage.getItem('isAdmin'));
   const [balance, setBalance] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -96,18 +97,23 @@ const Layout = () => {
 
   useEffect(() => {
     setIsAdmin(storedIsAdmin);
+    const authenticatedUser = JSON.parse(localStorage.getItem('authenticatedUser'));
+    if (authenticatedUser) {
+      setAuthenticatedUser(authenticatedUser);
     axios
     .get('https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users')
     .then(response => {
       const userData = response.data;
-      const user = userData.find(user => user.balance !== undefined);
+      const user = userData.find(user => user.username === authenticatedUser.username);
       if (user) {
+        
         setBalance(user.balance);
       }
     })
     .catch(error => {
       console.error('Error fetching balance:', error);
     });
+  }
   }, []);
 
   const logout = () => {
@@ -115,6 +121,8 @@ const Layout = () => {
     localStorage.setItem('isAuthenticated', JSON.stringify(false));
     setIsAdmin(false);
     localStorage.setItem('isAdmin', JSON.stringify(false));
+    setAuthenticatedUser(null);
+    localStorage.removeItem('authenticatedUser');
     navigate('/login');
   };
 
@@ -140,7 +148,7 @@ const Layout = () => {
             )}
             {isAuthenticated ? (
               <Box display="flex" alignItems="center" justifyContent="flex-end" ml={2}>
-                {isAdmin ? null : <Typography variant="subtitle1" mr={10}>Your Balance: {balance}</Typography>}
+                {isAdmin ? null : <Typography variant="subtitle1" mr={10}>Your Balance: {authenticatedUser?.balance || 0}</Typography>}
                 <Button color='error' variant='contained' onClick={logout}>Log Out</Button>
               </Box>
             ) : (
