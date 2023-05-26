@@ -18,13 +18,13 @@ export default function Tasks() {
   }, []);
 
   const authenticatedUser = JSON.parse(localStorage.getItem('authenticatedUser'));
-  const parentUsername = authenticatedUser.username;
-  
+  const Idcode = authenticatedUser.Identification;
+
   const fetchData = () => {
     fetch('https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users')
       .then(response => response.json())
       .then(data => {
-        const userTasks = data.filter(user => user.type === 'parent' && user.username === parentUsername)
+        const userTasks = data.filter(user => user.type === 'parent' && user.Identification === Idcode)
           .flatMap(user => user.tasks || []);
         setTasks(userTasks);
       })
@@ -44,7 +44,7 @@ export default function Tasks() {
 
     setTasks(updatedTasks);
   };
-  console.log('Username:', parentUsername);
+  console.log('Idcode', Idcode);
   return (
     <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper', margin:'10px auto', mt:10 }}> 
       {tasks.map((task) => {

@@ -28,6 +28,12 @@ function Copyright(props) {
 
 const theme = createTheme();
 
+const generateIdentificationid = () => {
+  const { v4: uuidv4 } = require('uuid');
+  const Identificationid = uuidv4();
+  return Identificationid;
+};
+
 export default function Register() {
   const [parentUsername, setParentUsername] = useState('');
   const [parentEmail, setParentEmail] = useState('');
@@ -42,8 +48,11 @@ export default function Register() {
   const handleSubmit = async (event) => {
     event.preventDefault();
   
+    const Identificationid = generateIdentificationid();
+
     const parentData = {
       username: parentUsername,
+      Identification: Identificationid,
       email: parentEmail,
       password: parentPassword,
       type: 'parent',
@@ -52,6 +61,7 @@ export default function Register() {
   
     const childData = {
       username: childUsername,
+      Identification: Identificationid,
       email: childEmail,
       password: childPassword,
       type: 'child',
