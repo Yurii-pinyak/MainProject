@@ -25,6 +25,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const { authenticatedUser, setAuthenticatedUser } = useContext(AuthContext);
   const storedIsAdmin = JSON.parse(localStorage.getItem('isAdmin'));
+  const [users, setUsers] = useState([]);
   const [balance, setBalance] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTaskCreated, setIsTaskCreated] = useState(false);
@@ -51,41 +52,62 @@ const Layout = () => {
     setTaskChecked('');
   };
 
-  const handleSaveTask = () => {
-    if (!taskId || !taskDescription || !taskReward || !taskChecked) {
-      setIsFieldsEmpty(true);
-      return;
-    }
+const handleSaveTask = () => {
+  if (!taskId || !taskDescription || !taskReward || !taskChecked) {
+    setIsFieldsEmpty(true);
+    return;
+  }
 
-    const taskData = {
-      id: taskId,
-      description: taskDescription,
-      reward: Number(taskReward), 
-      checked: taskChecked === 'true'
-    };
-
-    fetch('https://646393da043c103502a69402.mockapi.io/Tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(taskData)
-    })
-      .then(response => {
-        if (response.ok) {
-          setIsTaskCreated(true);
-          setTaskId('');
-          setTaskDescription('');
-          setTaskReward('');
-          setTaskChecked('');
-        } else {
-          throw new Error('Failed to create task');
-        }
-      })
-      .catch(error => {
-        console.error('Error creating task:', error);
-      });
+  const taskData = {
+    id: taskId,
+    description: taskDescription,
+    reward: Number(taskReward),
+    checked: taskChecked === 'true'
   };
+
+  const authenticatedUser = JSON.parse(localStorage.getItem('authenticatedUser'));
+  const parentUsername = authenticatedUser.username;
+  console.log('parentUsername:', parentUsername);
+
+  axios
+    .get(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users?username=${parentUsername}`)
+    .then(response => {
+      const parentUser = response.data.find(user => user.type === 'parent' && user.username === parentUsername);
+      console.log('parentUser:', parentUser);
+
+      if (parentUser) {
+        const updatedTasks = [...parentUser.tasks, taskData];
+
+        axios
+          .put(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users/${parentUser.id}`, { tasks: updatedTasks })
+          .then(() => {
+            const updatedUsers = users.map(user => {
+              if (user.id === parentUser.id) {
+                return { ...user, tasks: updatedTasks };
+              }
+              return user;
+            });
+
+            setUsers(updatedUsers);
+            setIsTaskCreated(true);
+            setTaskId('');
+            setTaskDescription('');
+            setTaskReward('');
+            setTaskChecked('');
+          })
+          .catch(error => {
+            console.error('Error updating tasks:', error);
+            throw new Error('Failed to update tasks');
+          });
+      } else {
+        throw new Error('Parent user not found');
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching parent user:', error);
+      throw new Error('Failed to fetch parent user');
+    });
+};
 
   const inputProps = {
     margin: 'dense',
@@ -172,24 +194,28 @@ const Layout = () => {
             inputProps={inputProps}
             value={taskId}
             onChange={(e) => setTaskId(e.target.value)}
+            sx={{ mt: 1, mr:1 }}
           />
           <TextField
             label="Description"
             inputProps={inputProps}
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}
+            sx={{ mt: 1 }}
           />
           <TextField
             label="Reward"
             inputProps={inputProps}
             value={taskReward}
             onChange={(e) => setTaskReward(e.target.value)}
+            sx={{ mt: 1, mr:1 }}
           />
           <TextField
             label="Checked"
             inputProps={inputProps}
             value={taskChecked}
             onChange={(e) => setTaskChecked(e.target.value)}
+            sx={{ mt: 1 }}
           />
         </DialogContent>
         <DialogActions>

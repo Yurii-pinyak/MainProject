@@ -17,10 +17,17 @@ export default function Tasks() {
     fetchData();
   }, []);
 
+  const authenticatedUser = JSON.parse(localStorage.getItem('authenticatedUser'));
+  const parentUsername = authenticatedUser.username;
+  
   const fetchData = () => {
-    fetch('https://646393da043c103502a69402.mockapi.io/Tasks/')
+    fetch('https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users')
       .then(response => response.json())
-      .then(data => setTasks(data))
+      .then(data => {
+        const userTasks = data.filter(user => user.type === 'parent' && user.username === parentUsername)
+          .flatMap(user => user.tasks || []);
+        setTasks(userTasks);
+      })
       .catch(error => console.error('Помилка при отриманні даних:', error));
   };
 
@@ -29,7 +36,7 @@ export default function Tasks() {
       if (task.id === taskId) {
         return {
           ...task,
-          checked: !task.checked, // Інвертуємо значення "checked"
+          checked: !task.checked, 
         };
       }
       return task;
@@ -37,7 +44,7 @@ export default function Tasks() {
 
     setTasks(updatedTasks);
   };
-
+  console.log('Username:', parentUsername);
   return (
     <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper', margin:'10px auto', mt:10 }}> 
       {tasks.map((task) => {
