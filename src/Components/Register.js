@@ -56,7 +56,8 @@ export default function Register() {
       email: parentEmail,
       password: parentPassword,
       type: 'parent',
-      tasks: []
+      tasks: [],
+      shops: []
     };
   
     const childData = {
