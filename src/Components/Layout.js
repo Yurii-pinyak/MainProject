@@ -19,6 +19,8 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { AuthContext, AuthProvider } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Grid from '@mui/material/Grid';
+import ShopModal from './ShopModal';
 
 const Layout = () => {
   const location = useLocation();
@@ -34,9 +36,23 @@ const Layout = () => {
   const [taskDescription, setTaskDescription] = useState('');
   const [taskReward, setTaskReward] = useState('');
   const [taskChecked, setTaskChecked] = useState('');
-  
+  const [isShopModalOpen, setIsShopModalOpen] = useState(false);
+  const [shops, setShops] = useState([]);
 
   const isTaskPage = location.pathname === '/Tasks';
+  const isShopPage = location.pathname === '/Shop';
+
+  const handleShopModalOpen = () => {
+    setIsShopModalOpen(true);
+  };
+
+  const handleShopModalClose = () => {
+    setIsShopModalOpen(false);
+  };
+
+  const handleSaveShopItem = (shopData) => {
+    console.log('Shop item data:', shopData);
+  };
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
@@ -53,13 +69,13 @@ const Layout = () => {
   };
 
 const handleSaveTask = () => {
-  if (!taskId || !taskDescription || !taskReward || !taskChecked) {
+  if ( !taskDescription || !taskReward ) {
     setIsFieldsEmpty(true);
     return;
   }
 
   const taskData = {
-    id: taskId,
+    id: generateUniqueId(),
     description: taskDescription,
     reward: Number(taskReward),
     checked: taskChecked === 'true'
@@ -90,10 +106,10 @@ const handleSaveTask = () => {
 
             setUsers(updatedUsers);
             setIsTaskCreated(true);
-            setTaskId('');
+            setTaskId(generateUniqueId);
             setTaskDescription('');
             setTaskReward('');
-            setTaskChecked('');
+            setTaskChecked('false');
           })
           .catch(error => {
             console.error('Error updating tasks:', error);
@@ -107,6 +123,12 @@ const handleSaveTask = () => {
       console.error('Error fetching parent user:', error);
       throw new Error('Failed to fetch parent user');
     });
+};
+
+const generateUniqueId = () => {
+  const { v4: uuidv4 } = require('uuid');
+  const UniqueId = uuidv4();
+  return UniqueId;
 };
 
   const inputProps = {
@@ -168,6 +190,14 @@ const handleSaveTask = () => {
                 </Button>
               </Box>
             )}
+            {isShopPage && storedIsAdmin && (
+              <Box mr={5}>
+                <Button color='secondary' variant='contained' onClick={handleShopModalOpen}>
+                  <AddCircleIcon /> Shop Button
+                </Button>
+              </Box>
+            )}
+            <ShopModal isOpen={isShopModalOpen} onClose={handleShopModalClose} onSave={handleSaveShopItem} />
             {isAuthenticated ? (
               <Box display="flex" alignItems="center" justifyContent="flex-end" ml={2}>
                 {isAdmin ? null : <Typography variant="subtitle1" mr={10}>Your Balance: {authenticatedUser?.balance || 0}</Typography>}
@@ -187,36 +217,27 @@ const handleSaveTask = () => {
 
       <Dialog open={isModalOpen} onClose={handleModalClose}>
         <DialogTitle>Add New Task</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            label="Id"
-            inputProps={inputProps}
-            value={taskId}
-            onChange={(e) => setTaskId(e.target.value)}
-            sx={{ mt: 1, mr:1 }}
-          />
-          <TextField
-            label="Description"
-            inputProps={inputProps}
-            value={taskDescription}
-            onChange={(e) => setTaskDescription(e.target.value)}
-            sx={{ mt: 1 }}
-          />
-          <TextField
-            label="Reward"
-            inputProps={inputProps}
-            value={taskReward}
-            onChange={(e) => setTaskReward(e.target.value)}
-            sx={{ mt: 1, mr:1 }}
-          />
-          <TextField
-            label="Checked"
-            inputProps={inputProps}
-            value={taskChecked}
-            onChange={(e) => setTaskChecked(e.target.value)}
-            sx={{ mt: 1 }}
-          />
+        <DialogContent sx={{ display: 'flex' }}>
+          <Grid direction="column" sx={{width:800}}>
+            <Grid item xs={6}>
+              <TextField
+                label="Description"
+                inputProps={inputProps}
+                value={taskDescription}
+                onChange={(e) => setTaskDescription(e.target.value)}
+                sx={{m: 2, width:'90%'}}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Reward"
+                inputProps={inputProps}
+                value={taskReward}
+                onChange={(e) => setTaskReward(e.target.value)}
+                sx={{m: 2, width:'22%'}}
+              />
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleModalClose}>Cancel</Button>

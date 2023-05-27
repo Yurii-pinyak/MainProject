@@ -14,6 +14,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 function Shop() {
   const [data, setData] = useState([]);
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
+  const authenticatedUserok = JSON.parse(localStorage.getItem('authenticatedUser'));
+  const Idcode = authenticatedUserok.Identification;
 
   useEffect(() => {
     fetchData();
@@ -23,15 +25,20 @@ function Shop() {
     }
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch('https://646393da043c103502a69402.mockapi.io/Shop');
-      const jsonData = await response.json();
-      setData(jsonData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+  const fetchData = () => {
+    fetch('https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users')
+      .then(response => response.json())
+      .then(data => {
+        const user = data.find(user => user.Identification === Idcode && user.type === 'parent');
+        if (user && user.shops) {
+          setData(user.shops);
+        } else {
+          setData([]);
+        }
+      })
+      .catch(error => console.error('Помилка при отриманні даних:', error));
   };
+  
 
   const renderCards = () => {
     const handleBuyNow = async (item) => {
