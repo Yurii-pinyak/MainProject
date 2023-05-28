@@ -21,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Grid from '@mui/material/Grid';
 import ShopModal from './ShopModal';
+import { balanceSubject, BalanceObserver } from './balanceObserver.js';
 
 const Layout = () => {
   const location = useLocation();
@@ -170,6 +171,17 @@ const generateUniqueId = () => {
     navigate('/login');
   };
 
+  const Balance = () => {
+    const balanceObserver = new BalanceObserver();
+    useEffect(() => {
+      balanceSubject.addObserver(balanceObserver);
+      
+      return () => {
+        balanceSubject.removeObserver(balanceObserver);
+      };
+    }, []);
+  };
+
   return (
     <>
       <Outlet />
@@ -200,7 +212,7 @@ const generateUniqueId = () => {
             <ShopModal isOpen={isShopModalOpen} onClose={handleShopModalClose} onSave={handleSaveShopItem} />
             {isAuthenticated ? (
               <Box display="flex" alignItems="center" justifyContent="flex-end" ml={2}>
-                {isAdmin ? null : <Typography variant="subtitle1" mr={10}>Your Balance: {authenticatedUser?.balance || 0}</Typography>}
+                {isAdmin ? null : <Typography variant="subtitle1" mr={10}>Your Balance: {balance}</Typography>}
                 <Button color='error' variant='contained' onClick={logout}>Log Out</Button>
               </Box>
             ) : (

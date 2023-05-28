@@ -18,6 +18,7 @@ import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+import { BalanceSubject, BalanceObserver } from './balanceObserver';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -27,6 +28,8 @@ export default function Tasks() {
   const handleEditTask = (task) => {
     setEditTask(task);
   };
+
+  const balanceSubject = new BalanceSubject();
 
   useEffect(() => {
     fetchData();
@@ -73,6 +76,7 @@ export default function Tasks() {
                       })
                       .then(() => {
                         console.log('Баланс оновлено успішно');
+                        balanceSubject.notify();
                       })
                       .catch((error) => {
                         console.error('Помилка при оновленні балансу дитини:', error);
