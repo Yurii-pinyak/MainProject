@@ -46,20 +46,72 @@ export default function Tasks() {
       .catch(error => console.error('Помилка при отриманні даних:', error));
   };
 
-  const handleToggle = (taskId) => () => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === taskId) {
-        return {
-          ...task,
-          checked: !task.checked, 
-        };
-      }
-      return task;
-    });
-
-    setTasks(updatedTasks);
+  const handleToggle = (taskId) => {
+    axios
+      .get(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users?Identification=${Idcode}`)
+      .then((response) => {
+        const parentUser = response.data.find(
+          (user) => user.type === 'parent' && user.Identification === Idcode
+        );
+  
+        if (parentUser) {
+          const updatedTasks = parentUser.tasks.map((task) => {
+            if (task.id === taskId) {
+              axios
+                .get(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users?type=child`)
+                .then((childResponse) => {
+                  const childUser = childResponse.data.find(
+                    (user) => user.type === 'child' && user.Identification === Idcode
+                  );
+  
+                  if (childUser) {
+                    const updatedBalance = childUser.balance + task.reward;
+  
+                    axios
+                      .put(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users/${childUser.id}`, {
+                        balance: updatedBalance,
+                      })
+                      .then(() => {
+                        console.log('Баланс оновлено успішно');
+                      })
+                      .catch((error) => {
+                        console.error('Помилка при оновленні балансу дитини:', error);
+                      });
+                  } else {
+                    console.error('Користувач child не знайдений');
+                  }
+                })
+                .catch((error) => {
+                  console.error('Помилка при отриманні даних дитини:', error);
+                });
+  
+              return {
+                ...task,
+                checked: true,
+              };
+            }
+  
+            return task;
+          });
+  
+          axios
+            .put(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users/${parentUser.id}`, {
+              tasks: updatedTasks,
+            })
+            .then(() => {
+              fetchData();
+            })
+            .catch((error) => {
+              console.error('Помилка при оновленні завдання:', error);
+            });
+        } else {
+          console.error('Користувач parent не знайдений');
+        }
+      })
+      .catch((error) => {
+        console.error('Помилка при отриманні даних користувача:', error);
+      });
   };
-  console.log('Idcode', Idcode);
   
   const handleSaveTask = () => {
     if (authenticatedUser.type === 'parent') {
@@ -134,6 +186,34 @@ export default function Tasks() {
       });
   };
   
+  const [isAdmin, setIsAdmin] = useState(JSON.parse(localStorage.getItem('isAdmin')) || false);
+
+  const renderSecondaryAction = (task) => {
+    if (isAdmin) {
+      return (
+        <>
+          <IconButton edge="end" aria-label="comments" onClick={() => handleEditTask(task)}>
+            <ModeIcon />
+          </IconButton>
+          <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteTask(task.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </>
+      );
+    } else if (authenticatedUser.type === 'child' ) {
+      return (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleToggle(task.id)}
+          disabled={task.checked}
+        >
+          Done
+        </Button>
+      );
+    }
+    return null;
+  };
 
   return (
     <>
@@ -143,19 +223,10 @@ export default function Tasks() {
         return (
           <ListItem
             key={task.id}
-            secondaryAction={
-              <>
-              <IconButton edge="end" aria-label="comments" onClick={() => handleEditTask(task)}>
-                <ModeIcon />
-              </IconButton>
-              <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteTask(task.id)}>
-                <DeleteIcon />
-              </IconButton>
-              </>
-            }
+            secondaryAction={renderSecondaryAction(task)}
             disablePadding
           > 
-            <ListItemButton role={undefined} onClick={handleToggle(task.id)} dense>
+            <ListItemButton role={undefined} >
               <ListItemIcon>
                 <Typography
                   component="span"

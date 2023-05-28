@@ -109,7 +109,7 @@ const handleSaveTask = () => {
             setTaskId(generateUniqueId);
             setTaskDescription('');
             setTaskReward('');
-            setTaskChecked('false');
+            setTaskChecked("false");
           })
           .catch(error => {
             console.error('Error updating tasks:', error);

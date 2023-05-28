@@ -66,7 +66,7 @@ export default function Register() {
       email: childEmail,
       password: childPassword,
       type: 'child',
-      balance: ''
+      balance: 0
     };
   
     try {
