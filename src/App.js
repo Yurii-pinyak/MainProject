@@ -8,6 +8,7 @@ import Tasks from './Components/Tasks';
 import { Layout } from './Components/Layout';
 import { AuthProvider, useContext, AuthContext, useAuth } from './Components/AuthContext';
 import PrivateRoute from './Components/PrivateRoute';
+import Notification from './Components/Notification'
 
 
 
@@ -19,6 +20,7 @@ export default function App() {
       <Routes>
       <Route path="/" element={<Navigate to="/Home" />} />
       <Route element={<Layout />}>
+          <Route path='Notification' element={<Notification/>}/>
           <Route element={<PrivateRoute />}>
           <Route path="Shop" element={<Shop /> } />
         </Route>

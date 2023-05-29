@@ -220,8 +220,15 @@ export default function Tasks() {
   };
 
   return (
-    <>
-    <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper', margin:'10px auto', mt:10 }}> 
+    <div style={{
+      backgroundImage: `url(${require('./image2.png')})`,
+      backgroundSize: 'cover',
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'flexstart',
+      justifyContent: 'center',
+    }}>
+    <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper', margin:'10px auto', mt:10, maxHeight: '70vh',overflow: 'auto', }}> 
       {tasks.map((task) => {
         const labelId = `checkbox-list-label-${task.id}`;
         return (
@@ -247,7 +254,7 @@ export default function Tasks() {
                   {task.checked ? <CheckIcon /> : <ClearIcon />}
                 </Typography>
               </ListItemIcon>
-              <ListItemText id={labelId} primary={task.description} secondary={`Reward: ${task.reward}`} />
+              <ListItemText id={labelId} primary={task.description} secondary={`Reward: ${task.reward} `} />
             </ListItemButton>
           </ListItem>
         );
@@ -277,7 +284,7 @@ export default function Tasks() {
   <Button onClick={handleSaveTask}>Save</Button>
 </DialogActions>
 </Dialog>
-</>
+</div>
 
   );
 }

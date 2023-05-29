@@ -6,8 +6,8 @@
     text-align: center;
     width: 100%;
     height: 100vh;
-    background: linear-gradient(45deg, #ff00ff, #00ff00, #0000ff, #ff0000);
-    background-size: 400% 400%;
+    background: linear-gradient(45deg, #ff00ff, #00ff00, #0000ff, #ff0000, #ffff00, #00ffff);
+    background-size: 250% 250%;
     animation: gradientAnimation 10s ease infinite;
   }
   
@@ -36,14 +36,15 @@
   }
   
   .button {
-    font-size: 50px;
+    font-size: 25px;
     padding: 10px 30px;
     margin: 0 60px;
-    border-radius: 5px;
+    border-radius: 50px;
     font-weight: bold;
     color: white;
-    background-color: #3f51b5;
+    background-color: #717aad;
     border: none;
     cursor: pointer;
+
   }
   

@@ -22,6 +22,8 @@ import axios from 'axios';
 import Grid from '@mui/material/Grid';
 import ShopModal from './ShopModal';
 import { balanceSubject, BalanceObserver } from './balanceObserver.js';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+
 
 const Layout = () => {
   const location = useLocation();
@@ -186,7 +188,7 @@ const generateUniqueId = () => {
     <>
       <Outlet />
       <AppBar>
-        <Container fixed>
+        <Container fixed >
           <Toolbar>
             <IconButton edge="start" color="inherit" aria-laabel="menu">
             </IconButton>
@@ -195,25 +197,35 @@ const generateUniqueId = () => {
             <Box mr={40}>
               <Button color='inherit' variant='primary' href="Shop">Shop</Button>
             </Box>
+            { storedIsAdmin && (
+              <Box mr={4}>
+                <Button color='secondary' variant='contained' href='Notification'>
+                    Notification
+                </Button>
+              </Box>
+            )}
             {isTaskPage && storedIsAdmin && (
-              <Box mr={5}>
+              <Box mr={4}>
                 <Button color='secondary' variant='contained' onClick={handleModalOpen}>
                   <AddCircleIcon /> Task Button
                 </Button>
               </Box>
-            )}
+            )}      
             {isShopPage && storedIsAdmin && (
-              <Box mr={5}>
+              <Box mr={4}>
                 <Button color='secondary' variant='contained' onClick={handleShopModalOpen}>
                   <AddCircleIcon /> Shop Button
                 </Button>
               </Box>
             )}
             <ShopModal isOpen={isShopModalOpen} onClose={handleShopModalClose} onSave={handleSaveShopItem} />
+
             {isAuthenticated ? (
-              <Box display="flex" alignItems="center" justifyContent="flex-end" ml={2}>
-                {isAdmin ? null : <Typography variant="subtitle1" mr={10}>Your Balance: {balance}</Typography>}
-                <Button color='error' variant='contained' onClick={logout}>Log Out</Button>
+              <Box display="flex" alignItems="center" justifyContent="flex-end" >
+                <Button color='error' variant='contained' onClick={logout} >Log Out</Button>
+                {isAdmin ? null : <Typography variant="subtitle1" ml={5} sx={{ display: 'flex', alignItems: 'center' }}>
+                    Your Balance: {balance}
+                    <MonetizationOnIcon sx={{ fontSize: 25, verticalAlign: 'center', ml: 0.5 }} /></Typography>}
               </Box>
             ) : (
             <>
@@ -226,7 +238,7 @@ const generateUniqueId = () => {
           </Toolbar>
         </Container>
       </AppBar>
-
+                
       <Dialog open={isModalOpen} onClose={handleModalClose}>
         <DialogTitle>Add New Task</DialogTitle>
         <DialogContent sx={{ display: 'flex' }}>

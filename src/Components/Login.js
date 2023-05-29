@@ -54,12 +54,16 @@ export default function Login() {
   };
   
   return (
+    <div style={{
+      backgroundImage: `url(${require('./image7.png')})`,
+      backgroundSize: 'cover',
+      minHeight: '100vh',}}>
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 0,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -126,5 +130,6 @@ export default function Login() {
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
+    </div>
   );
 }

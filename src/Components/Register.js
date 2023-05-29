@@ -137,12 +137,16 @@ export default function Register() {
   };
 
   return (
+    <div style={{
+      backgroundImage: `url(${require('./image7.png')})`,
+      backgroundSize: 'cover',
+      minHeight: '100vh',}}>
     <ThemeProvider theme={theme}>
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: 0,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -266,5 +270,6 @@ export default function Register() {
       </Box>
     </Container>
   </ThemeProvider>
+  </div>
   );
 }

@@ -18,7 +18,7 @@ const Home = () => {
     <Navigate to="/Shop" replace />
   ) : (
     <div className="home">
-    <h2 className="title">Welcome to FammiHelp!</h2>
+    <h2 className="title">Welcome to FamiHelp!</h2>
     <div className="button-container">
       <button className="button" onClick={handleSignIn} >
         If you are child or parent:<br />

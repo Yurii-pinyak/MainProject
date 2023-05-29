@@ -9,6 +9,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Snackbar from '@mui/material/Snackbar';
+
 
 
 function Shop() {
@@ -16,6 +18,9 @@ function Shop() {
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
   const authenticatedUserok = JSON.parse(localStorage.getItem('authenticatedUser'));
   const Idcode = authenticatedUserok.Identification;
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+ 
+
 
   useEffect(() => {
     fetchData();
@@ -61,6 +66,10 @@ function Shop() {
           });
   
           console.log('Purchase successful');
+          setSnackbarOpen(true); 
+          setTimeout(() => {
+          setSnackbarOpen(false); 
+        }, 2000);
         } else {
           console.log('Insufficient balance');
         }
@@ -71,7 +80,7 @@ function Shop() {
     return data.map((item) => (
       <Grid item key={item.id} xs={12} sm={6} md={4}>
         <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <CardMedia component="img" height="140" image={item.image} alt={item.title} />
+          <CardMedia component="img" height="225" image={item.image} alt={item.title} />
           <CardContent sx={{ flexGrow: 1 }}>
             <Typography gutterBottom variant="h5" component="div">
               {item.title}
@@ -92,17 +101,28 @@ function Shop() {
   };
 
   return (
+    <div style={{
+      backgroundImage: `url(${require('./image.png')})`,
+      backgroundSize: 'cover',
+      minHeight: '100vh'}}> 
     <ThemeProvider theme={createTheme()}>
       <main>
-        <Box sx={{ bgcolor: 'background.paper', pt: 8, pb: 6 }}>
+        <Box sx={{ bgcolor: 'background.paper', pt: 8}}>
         </Box>
-        <Container sx={{ py: 8 }} maxWidth="md">
-          <Grid container spacing={2}>
+        <Container maxWidth="md">
+          <Grid container spacing={3}>
             {renderCards()}
           </Grid>
         </Container>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={2000}
+          onClose={() => setSnackbarOpen(false)}
+          message="Purchase is successful!"
+        />
       </main>
     </ThemeProvider>
+    </div>
   );
 }
 
