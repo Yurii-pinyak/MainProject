@@ -20,15 +20,29 @@ const Home = () => {
     <div className="home">
     <h2 className="title">Welcome to FamiHelp!</h2>
     <div className="button-container">
-      <button className="button" onClick={handleSignIn} >
-        If you are child or parent:<br />
-        Sign in
-      </button>
-      <button className="button" onClick={handleSignUp}>
-        If you are parent:<br />
-        Sign up
-      </button>
+    <a href="#" className="button" onClick={handleSignIn}>
+      <span className="button-line button-line-top"></span>
+      <span className="button-line button-line-right"></span>
+      <span className="button-line button-line-bottom"></span>
+      <span className="button-line button-line-left"></span>
+    if you are a child or a parent:<br />
+    Sign in
+        
+    </a>
+    <a href="#" className="button" onClick={handleSignUp}>
+      <span className="button-line button-line-top"></span>
+      <span className="button-line button-line-right"></span>
+      <span className="button-line button-line-bottom"></span>
+      <span className="button-line button-line-left"></span>
+    If you are parent:<br />
+    Sign up
+        
+    </a>
+
     </div>
+    
+   
+    
   </div>
   );
 };

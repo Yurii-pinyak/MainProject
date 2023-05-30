@@ -138,7 +138,7 @@ export default function Register() {
 
   return (
     <div style={{
-      backgroundImage: `url(${require('./image7.png')})`,
+      backgroundImage: `url(${require('./image4.png')})`,
       backgroundSize: 'cover',
       minHeight: '100vh',}}>
     <ThemeProvider theme={theme}>

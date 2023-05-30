@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
-
+import axios from 'axios';
 
 
 function Shop() {
@@ -19,7 +19,7 @@ function Shop() {
   const authenticatedUserok = JSON.parse(localStorage.getItem('authenticatedUser'));
   const Idcode = authenticatedUserok.Identification;
   const [snackbarOpen, setSnackbarOpen] = useState(false);
- 
+  const [isAdmin, setIsAdmin] = useState(JSON.parse(localStorage.getItem('isAdmin')) || false);
 
 
   useEffect(() => {
@@ -43,7 +43,6 @@ function Shop() {
       })
       .catch(error => console.error('Помилка при отриманні даних:', error));
   };
-  
 
   const renderCards = () => {
     const handleBuyNow = async (item) => {
@@ -77,6 +76,74 @@ function Shop() {
         console.error('Error fetching user data:', error);
       }
     };
+
+    const increaseBoughtValue = (itemId) => {
+      axios
+        .get(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users?Identification=${Idcode}`)
+        .then((response) => {
+          const parentUser = response.data.find(
+            (user) => user.type === 'parent' && user.Identification === Idcode);
+            
+            if (parentUser) {
+              const updatedShops = parentUser.shops.map((item) => {
+                if (item.id === itemId) {
+                  return {
+                    ...item,
+                    bought: item.bought + 1,
+                  };
+                }
+                return item;
+              });
+      
+              const updatedUser = {
+                ...parentUser,
+                shops: updatedShops,
+              };
+              axios
+                .put(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users/${parentUser.id}`, updatedUser)
+                .then(() => {
+                  console.log(`Значення "bought" для товару з id ${itemId} збільшено на 1`);
+                  
+                })
+                .catch((error) => {
+                  console.error('Помилка при оновленні значення "bought":', error);
+                });
+            } else {
+              console.error('Користувач з типом "parent" та заданим Identification не знайдений');
+            }
+          })
+          .catch((error) => {
+            console.error('Помилка при отриманні даних користувача:', error);
+          });
+      };
+
+      const handleDeleteShop = (itemId) => {
+        axios
+          .get(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users?Identification=${Idcode}`)
+          .then(response => {
+            const parentUser = response.data.find(user => user.type === 'parent' && user.Identification === Idcode);
+            if (parentUser) {
+              const updatedShops = parentUser.shops.filter(item => item.id !== itemId);
+      
+              axios
+                .put(`https://646a874d7d3c1cae4ce2a2cd.mockapi.io/Users/${parentUser.id}`, {
+                  shops: updatedShops,
+                })
+                .then(() => {
+                  fetchData();
+                })
+                .catch(error => {
+                  console.error('Помилка при видаленні завдання:', error);
+                });
+            } else {
+              console.error('Користувач parent не знайдений');
+            }
+          })
+          .catch(error => {
+            console.error('Помилка при отриманні даних користувача:', error);
+          });
+      }; 
+  
     return data.map((item) => (
       <Grid item key={item.id} xs={12} sm={6} md={4}>
         <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -93,7 +160,11 @@ function Shop() {
             </Typography>
           </CardContent>
           <CardActions sx={{ mt: 'auto' }}>
-            <Button size="small" onClick={() => handleBuyNow(item)}>Buy Now</Button>
+          {isAdmin ? (
+            <Button size="small" onClick={() => handleDeleteShop(item.id)} >Delete</Button>
+          ) : (
+            <Button size="small" onClick={() => { handleBuyNow(item); increaseBoughtValue(item.id); }}>Buy Now</Button>
+          )}
           </CardActions>
         </Card>
       </Grid>

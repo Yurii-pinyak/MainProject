@@ -38,6 +38,7 @@ const ShopModal = ({ isOpen, onClose, onSave }) => {
       description: ShopDescription,
       title: ShopTitle,
       price: Number(ShopPrice),
+      bought: 0,
       image : ShopImage
     };
   
